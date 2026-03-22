@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedBuddy — Your Medical Companion</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,700;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --blue-50: #eff8ff;
+      --blue-100: #dbeefe;
+      --blue-200: #b9dffe;
+      --blue-300: #7cc5fd;
+      --blue-400: #36a7f9;
+      --blue-500: #0c8be8;
+      --blue-600: #006dc6;
+      --blue-700: #0157a1;
+      --blue-800: #064b84;
+      --blue-900: #0b3f6e;
+      --accent: #00c2b2;
+      --accent-light: #d0f5f2;
+      --warn: #f97316;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --white: #ffffff;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-400: #94a3b8;
+      --gray-600: #475569;
+      --gray-800: #1e293b;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius: 16px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0,109,198,0.10);
+      --shadow-lg: 0 8px 40px rgba(0,109,198,0.16);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--blue-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 10% 10%, rgba(59,182,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 90% 80%, rgba(0,194,178,0.10) 0%, transparent 60%);
+    }
+
+    /* NAV */
+    nav {
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--blue-100);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--blue-700);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--blue-500), var(--accent));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .lang-toggle {
+      display: flex;
+      gap: 0;
+      border: 1.5px solid var(--blue-200);
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .lang-btn {
+      padding: 6px 18px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      background: transparent;
+      color: var(--gray-600);
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      background: var(--blue-600);
+      color: var(--white);
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 56px 1rem 36px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--blue-100);
+      color: var(--blue-700);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      color: var(--blue-900);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .hero h1 span {
+      color: var(--blue-500);
+      font-style: italic;
+    }
+
+    .hero p {
+      color: var(--gray-600);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    /* MAIN CARD */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.2rem 4rem;
+    }
+
+    .upload-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1.5px solid var(--blue-100);
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue-500);
+      margin-bottom: 10px;
+    }
+
+    /* TAB SWITCHER */
+    .input-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.4rem;
+      background: var(--gray-100);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--blue-700);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    }
+
+    /* DROP ZONE */
+    .drop-zone {
+      border: 2px dashed var(--blue-200);
+      border-radius: var(--radius);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--blue-50);
+      position: relative;
+    }
+
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--blue-400);
+      background: var(--blue-100);
+    }
+
+    .drop-zone input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .drop-icon {
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+
+    .drop-zone h3 {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      color: var(--blue-800);
+      margin-bottom: 4px;
+    }
+
+    .drop-zone p {
+      font-size: 0.82rem;
+      color: var(--gray-400);
+    }
+
+    .file-preview {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: var(--blue-50);
+      border: 1.5px solid var(--blue-200);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-top: 12px;
+    }
+
+    .file-preview.show { display: flex; }
+
+    .file-preview span { font-size: 0.88rem; color: var(--blue-700); flex: 1; }
+
+    .remove-file {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--danger);
+      font-size: 1.1rem;
+    }
+
+    /* TEXT AREA */
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      border: 1.5px solid var(--blue-200);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--gray-800);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      background: var(--gray-50);
+    }
+
+    textarea:focus { border-color: var(--blue-400); background: var(--white); }
+
+    /* OPTIONAL FIELDS */
+    .optional-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.2rem;
+    }
+
+    .field-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      margin-bottom: 6px;
+    }
+
+    .field-group input, .field-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--blue-200);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--gray-800);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field-group input:focus, .field-group select:focus {
+      border-color: var(--blue-400);
+    }
+
+    /* ANALYZE BTN */
+    .analyze-btn {
+      width: 100%;
+      margin-top: 1.4rem;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.22s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 16px rgba(12,139,232,0.30);
+    }
+
+    .analyze-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(12,139,232,0.40);
+    }
+
+    .analyze-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* LOADING */
+    .loading-section {
+      display: none;
+      text-align: center;
+      padding: 2.5rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--blue-100);
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .loading-section.show { display: block; }
+
+    .pulse-ring {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      position: relative;
+    }
+
+    .pulse-ring::before, .pulse-ring::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid var(--blue-400);
+      animation: pulse-out 1.6s ease-out infinite;
+    }
+
+    .pulse-ring::after { animation-delay: 0.8s; }
+
+    .pulse-inner {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--blue-400), var(--accent));
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    @keyframes pulse-out {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    .loading-text {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      color: var(--blue-700);
+      margin-bottom: 6px;
+    }
+
+    .loading-sub {
+      font-size: 0.83rem;
+      color: var(--gray-400);
+    }
+
+    /* RESULTS */
+    .results-section { display: none; }
+    .results-section.show { display: block; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .results-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--blue-900);
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-outline {
+      padding: 8px 16px;
+      border: 1.5px solid var(--blue-200);
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--blue-700);
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline:hover {
+      background: var(--blue-50);
+      border-color: var(--blue-400);
+    }
+
+    /* ONE LINE SUMMARY */
+    .family-summary {
+      background: linear-gradient(135deg, var(--blue-600), var(--blue-800));
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .family-summary .sum-icon { font-size: 1.6rem; flex-shrink: 0; margin-top: 2px; }
+
+    .family-summary h3 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 4px;
+    }
+
+    .family-summary p {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      line-height: 1.5;
+    }
+
+    /* RESULT CARDS GRID */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .optional-row { grid-template-columns: 1fr; }
+    }
+
+    .result-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--blue-100);
+      box-shadow: var(--shadow);
+      padding: 1.4rem;
+      animation: card-in 0.4s ease both;
+    }
+
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card:nth-child(2) { animation-delay: 0.08s; }
+    .result-card:nth-child(3) { animation-delay: 0.16s; }
+    .result-card:nth-child(4) { animation-delay: 0.24s; }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .icon-blue { background: var(--blue-100); }
+    .icon-teal { background: var(--accent-light); }
+    .icon-warn { background: #fff3e6; }
+    .icon-success { background: #f0fdf4; }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--blue-900);
+    }
+
+    .diagnosis-text {
+      font-size: 0.92rem;
+      color: var(--gray-600);
+      line-height: 1.75;
+    }
+
+    /* MEDICATION TABLE */
+    .med-table-wrap {
+      overflow-x: auto;
+    }
+
+    .med-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.83rem;
+    }
+
+    .med-table th {
+      background: var(--blue-50);
+      color: var(--blue-700);
+      font-weight: 600;
+      padding: 9px 10px;
+      text-align: left;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid var(--blue-200);
+    }
+
+    .med-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-800);
+      vertical-align: top;
+    }
+
+    .med-table tr:last-child td { border-bottom: none; }
+    .med-table tr:hover td { background: var(--blue-50); }
+
+    .med-name { font-weight: 600; color: var(--blue-700); }
+
+    /* SIDE EFFECTS */
+    .side-effect-list { list-style: none; }
+
+    .side-effect-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.88rem;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+
+    .side-effect-item:last-child { border-bottom: none; }
+
+    .se-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warn);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .doctor-alert {
+      background: #fff3e6;
+      border: 1px solid #fed7a0;
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: #7c3d09;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    /* CHECKLIST */
+    .checklist { list-style: none; }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.88rem;
+      color: var(--gray-600);
+    }
+
+    .checklist-item:last-child { border-bottom: none; }
+
+    .check-box {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--blue-300);
+      border-radius: 4px;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      margin-top: 2px;
+    }
+
+    .check-box.checked {
+      background: var(--blue-500);
+      border-color: var(--blue-500);
+    }
+
+    .check-box.checked::after {
+      content: '✓';
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* COMPARISON */
+    .comparison-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1.5px solid var(--blue-100);
+      box-shadow: var(--shadow);
+      padding: 1.4rem;
+      margin-bottom: 1rem;
+      grid-column: 1 / -1;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 580px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    .comp-box {
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-size: 0.86rem;
+      line-height: 1.7;
+    }
+
+    .comp-jargon {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      color: var(--gray-600);
+    }
+
+    .comp-plain {
+      background: var(--blue-50);
+      border: 1px solid var(--blue-200);
+      color: var(--blue-800);
+    }
+
+    .comp-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .comp-jargon .comp-label { color: var(--gray-400); }
+    .comp-plain .comp-label { color: var(--blue-500); }
+
+    /* HISTORY */
+    .history-section {
+      margin-top: 3rem;
+    }
+
+    .history-title {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--blue-900);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .history-item {
+      background: var(--white);
+      border: 1.5px solid var(--blue-100);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.18s;
+      gap: 10px;
+    }
+
+    .history-item:hover {
+      border-color: var(--blue-300);
+      background: var(--blue-50);
+    }
+
+    .history-info { flex: 1; }
+    .history-name { font-weight: 500; font-size: 0.9rem; color: var(--blue-800); }
+    .history-date { font-size: 0.78rem; color: var(--gray-400); margin-top: 2px; }
+    .history-arrow { color: var(--gray-400); font-size: 1rem; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--blue-800);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-lg);
+      z-index: 999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* EMPTY STATE */
+    .empty-history {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray-400);
+      font-size: 0.88rem;
+    }
+
+    /* HINDI font support */
+    .hindi-text {
+      font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+      line-height: 1.9;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon">🏥</div>
+    MedBuddy
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">✦ IAR Udaan Hackathon 2026</div>
+  <h1>Your prescription,<br/><span>finally explained</span></h1>
+  <p>Upload your discharge summary or prescription. Get a plain-language breakdown your whole family can understand — in seconds.</p>
+</div>
+
+<div class="container">
+
+  <!-- UPLOAD CARD -->
+  <div class="upload-card">
+    <div class="section-label">Step 1 — Upload Document</div>
+
+    <div class="input-tabs">
+      <button class="tab-btn active" onclick="switchTab('pdf')">📄 PDF Upload</button>
+      <button class="tab-btn" onclick="switchTab('image')">🖼️ Image Upload</button>
+      <button class="tab-btn" onclick="switchTab('text')">✏️ Paste Text</button>
+    </div>
+
+    <!-- PDF TAB -->
+    <div class="tab-panel active" id="tab-pdf">
+      <div class="drop-zone" id="pdfDrop">
+        <input type="file" accept=".pdf" id="pdfInput" onchange="handleFile(this,'pdf')"/>
+        <div class="drop-icon">📋</div>
+        <h3>Drop your PDF here</h3>
+        <p>or click to browse · PDF up to 10MB</p>
+      </div>
+      <div class="file-preview" id="pdfPreview">
+        <span>📄 </span><span id="pdfName"></span>
+        <button class="remove-file" onclick="removeFile('pdf')">✕</button>
+      </div>
+    </div>
+
+    <!-- IMAGE TAB -->
+    <div class="tab-panel" id="tab-image">
+      <div class="drop-zone" id="imgDrop">
+        <input type="file" accept="image/*" id="imgInput" onchange="handleFile(this,'image')"/>
+        <div class="drop-icon">🖼️</div>
+        <h3>Drop prescription image here</h3>
+        <p>JPG, PNG, WebP · up to 10MB</p>
+      </div>
+      <div class="file-preview" id="imgPreview">
+        <span>🖼️ </span><span id="imgName"></span>
+        <button class="remove-file" onclick="removeFile('image')">✕</button>
+      </div>
+    </div>
+
+    <!-- TEXT TAB -->
+    <div class="tab-panel" id="tab-text">
+      <textarea id="textInput" placeholder="Paste your prescription or discharge summary text here..."></textarea>
+    </div>
+
+    <div class="optional-row">
+      <div class="field-group">
+        <label>Patient Age (optional)</label>
+        <input type="number" id="patientAge" placeholder="e.g. 45" min="1" max="120"/>
+      </div>
+      <div class="field-group">
+        <label>Output Language</label>
+        <select id="outputLang">
+          <option value="en">English</option>
+          <option value="hi">Hindi (हिंदी)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="analyze-btn" id="analyzeBtn" onclick="analyze()">
+      <span>🔍</span> Analyze Prescription
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-section" id="loadingSection">
+    <div class="pulse-ring">
+      <div class="pulse-inner">🩺</div>
+    </div>
+    <div class="loading-text">Analyzing your document…</div>
+    <div class="loading-sub">Simplifying medical jargon · Structuring your schedule · Building checklist</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <h2>📊 Your Health Summary</h2>
+      <div class="results-actions">
+        <button class="btn-outline" onclick="copyFamilySummary()">📋 Copy Summary</button>
+        <button class="btn-outline" onclick="resetForm()">🔄 New Upload</button>
+      </div>
+    </div>
+
+    <!-- FAMILY SUMMARY -->
+    <div class="family-summary">
+      <div class="sum-icon">💬</div>
+      <div>
+        <h3>Share with Family</h3>
+        <p id="familySummaryText">—</p>
+      </div>
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+
+      <!-- DIAGNOSIS -->
+      <div class="result-card">
+        <div class="card-header">
+          <div class="card-icon icon-blue">🩺</div>
+          <div class="card-title">Diagnosis — Plain Language</div>
+        </div>
+        <div class="diagnosis-text" id="diagnosisText">—</div>
+      </div>
+
+      <!-- SIDE EFFECTS -->
+      <div class="result-card">
+        <div class="card-header">
+          <div class="card-icon icon-warn">⚠️</div>
+          <div class="card-title">Side Effect Alerts</div>
+        </div>
+        <ul class="side-effect-list" id="sideEffectsList"></ul>
+        <div class="doctor-alert" id="doctorAlert" style="display:none">
+          🚨 <span id="doctorAlertText"></span>
+        </div>
+      </div>
+
+      <!-- MEDICATION TABLE — full width -->
+      <div class="result-card" style="grid-column: 1 / -1">
+        <div class="card-header">
+          <div class="card-icon icon-teal">💊</div>
+          <div class="card-title">Medication Schedule</div>
+        </div>
+        <div class="med-table-wrap">
+          <table class="med-table">
+            <thead>
+              <tr>
+                <th>Medicine</th>
+                <th>Dosage</th>
+                <th>Timing</th>
+                <th>Duration</th>
+                <th>Instructions</th>
+              </tr>
+            </thead>
+            <tbody id="medTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CHECKLIST -->
+      <div class="result-card" style="grid-column: 1 / -1">
+        <div class="card-header">
+          <div class="card-icon icon-success">✅</div>
+          <div class="card-title">Follow-up Checklist</div>
+        </div>
+        <ul class="checklist" id="checklistItems"></ul>
+      </div>
+
+      <!-- COMPARISON -->
+      <div class="result-card" style="grid-column: 1 / -1">
+        <div class="card-header">
+          <div class="card-icon icon-blue">🔄</div>
+          <div class="card-title">Jargon vs Plain Language</div>
+        </div>
+        <div class="comparison-grid" id="comparisonGrid"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section" id="historySection">
+    <div class="history-title">🕐 Recent Analyses</div>
+    <div class="history-list" id="historyList">
+      <div class="empty-history">No analyses yet. Upload your first prescription!</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentLang = 'en';
+  let currentTab = 'pdf';
+  let files = { pdf: null, image: null };
+
+  function setLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.lang-btn:${lang === 'en' ? 'first-child' : 'last-child'}`).classList.add('active');
+    document.getElementById('outputLang').value = lang;
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+
+  function handleFile(input, type) {
+    const file = input.files[0];
+    if (!file) return;
+    files[type] = file;
+    document.getElementById(type === 'pdf' ? 'pdfName' : 'imgName').textContent = file.name;
+    document.getElementById(type === 'pdf' ? 'pdfPreview' : 'imgPreview').classList.add('show');
+  }
+
+  function removeFile(type) {
+    files[type] = null;
+    document.getElementById(type === 'pdf' ? 'pdfInput' : 'imgInput').value = '';
+    document.getElementById(type === 'pdf' ? 'pdfPreview' : 'imgPreview').classList.remove('show');
+  }
+
+  async function analyze() {
+    const btn = document.getElementById('analyzeBtn');
+    const lang = document.getElementById('outputLang').value;
+    const age = document.getElementById('patientAge').value;
+
+    const formData = new FormData();
+    formData.append('lang', lang);
+    if (age) formData.append('age', age);
+
+    if (currentTab === 'pdf' && files.pdf) {
+      formData.append('file', files.pdf);
+      formData.append('inputType', 'pdf');
+    } else if (currentTab === 'image' && files.image) {
+      formData.append('file', files.image);
+      formData.append('inputType', 'image');
+    } else if (currentTab === 'text') {
+      const text = document.getElementById('textInput').value.trim();
+      if (!text) { showToast('Please paste your prescription text.'); return; }
+      formData.append('text', text);
+      formData.append('inputType', 'text');
+    } else {
+      showToast('Please upload a file or paste text first.');
+      return;
+    }
+
+    btn.disabled = true;
+    document.getElementById('loadingSection').classList.add('show');
+    document.getElementById('resultsSection').classList.remove('show');
+
+    try {
+      const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Server error');
+      renderResults(data);
+      loadHistory();
+    } catch (err) {
+      showToast('Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      document.getElementById('loadingSection').classList.remove('show');
+    }
+  }
+
+  function renderResults(data) {
+    document.getElementById('familySummaryText').textContent = data.familySummary || '—';
+
+    const diagEl = document.getElementById('diagnosisText');
+    diagEl.textContent = data.diagnosis || '—';
+    if (data.lang === 'hi') diagEl.classList.add('hindi-text');
+
+    // Medication table
+    const tbody = document.getElementById('medTableBody');
+    tbody.innerHTML = '';
+    (data.medications || []).forEach(med => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="med-name">${med.name}</td>
+        <td>${med.dosage}</td>
+        <td>${med.timing}</td>
+        <td>${med.duration}</td>
+        <td>${med.instructions || '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Side effects
+    const seList = document.getElementById('sideEffectsList');
+    seList.innerHTML = '';
+    (data.sideEffects || []).forEach(se => {
+      const li = document.createElement('li');
+      li.className = 'side-effect-item';
+      li.innerHTML = `<div class="se-dot"></div><span>${se}</span>`;
+      seList.appendChild(li);
+    });
+
+    const alertEl = document.getElementById('doctorAlert');
+    if (data.doctorAlert) {
+      alertEl.style.display = 'flex';
+      document.getElementById('doctorAlertText').textContent = data.doctorAlert;
+    } else {
+      alertEl.style.display = 'none';
+    }
+
+    // Checklist
+    const cl = document.getElementById('checklistItems');
+    cl.innerHTML = '';
+    (data.checklist || []).forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'checklist-item';
+      const box = document.createElement('div');
+      box.className = 'check-box';
+      box.onclick = () => box.classList.toggle('checked');
+      li.appendChild(box);
+      const txt = document.createElement('span');
+      txt.textContent = item;
+      li.appendChild(txt);
+      cl.appendChild(li);
+    });
+
+    // Comparison
+    const cg = document.getElementById('comparisonGrid');
+    cg.innerHTML = '';
+    (data.comparisons || []).forEach(pair => {
+      const jargon = document.createElement('div');
+      jargon.className = 'comp-box comp-jargon';
+      jargon.innerHTML = `<div class="comp-label">Original Jargon</div>${pair.original}`;
+      const plain = document.createElement('div');
+      plain.className = 'comp-box comp-plain';
+      plain.innerHTML = `<div class="comp-label">Plain Language</div>${pair.plain}`;
+      cg.appendChild(jargon);
+      cg.appendChild(plain);
+    });
+
+    document.getElementById('resultsSection').classList.add('show');
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch('/api/history');
+      const data = await res.json();
+      const list = document.getElementById('historyList');
+      if (!data.length) {
+        list.innerHTML = '<div class="empty-history">No analyses yet. Upload your first prescription!</div>';
+        return;
+      }
+      list.innerHTML = '';
+      data.slice(0, 8).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+          <div class="history-info">
+            <div class="history-name">📄 ${item.filename || 'Text Input'}</div>
+            <div class="history-date">${new Date(item.createdAt).toLocaleString()}</div>
+          </div>
+          <span class="history-arrow">›</span>
+        `;
+        div.onclick = () => renderResults(JSON.parse(item.result));
+        list.appendChild(div);
+      });
+    } catch (e) {}
+  }
+
+  function copyFamilySummary() {
+    const txt = document.getElementById('familySummaryText').textContent;
+    navigator.clipboard.writeText(txt).then(() => showToast('✅ Summary copied!'));
+  }
+
+  function resetForm() {
+    document.getElementById('resultsSection').classList.remove('show');
+    document.getElementById('textInput').value = '';
+    removeFile('pdf');
+    removeFile('image');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Drag-over highlight
+  ['pdfDrop', 'imgDrop'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag-over'); });
+  });
+
+  loadHistory();
+</script>
+</body>
+</html>
