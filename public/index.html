@@ -29,8 +29,8 @@
       color:var(--gray-800);
       min-height:100vh;
       display:flex;
-      overflow-x:hidden;
     }
+
 
     /* ── FLOWER BACKGROUND ── */
     body::before {
@@ -138,11 +138,22 @@
       margin-left:var(--sidebar-width);
       flex:1;
       min-height:100vh;
-      padding:28px 28px 80px;
+      padding:28px 40px 80px;
       transition:margin-left 0.38s cubic-bezier(0.4,0,0.2,1);
       overflow-x:hidden;
     }
-    .main.expanded{margin-left:0;padding-left:72px;}
+
+    .main.expanded {
+      margin-left:0;
+      padding:28px 10vw 80px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .main.expanded > * {
+      width:100%;
+      max-width:760px;
+    }
 
     /* ── SECTION BLOCKS (for scroll) ── */
     .scroll-section {
@@ -182,7 +193,7 @@
     .section-label{font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue-500);margin-bottom:12px;}
 
     /* STATS */
-    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;width:100%;}
     .stat-card{background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,0.9);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
     .stat-label{font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue-500);margin-bottom:6px;}
     .stat-value{font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--blue-900);line-height:1;}
@@ -254,7 +265,7 @@
     .family-summary h3{font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;opacity:0.65;margin-bottom:4px;}
     .family-summary p{font-family:var(--font-display);font-size:1rem;line-height:1.5;}
 
-    .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .cards-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;}
     .result-card{background:rgba(255,255,255,0.72);backdrop-filter:blur(14px);border:1.5px solid rgba(255,255,255,0.9);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;animation:card-in 0.4s ease both;}
     @keyframes card-in{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
     .result-card:nth-child(2){animation-delay:0.08s;}
@@ -372,27 +383,24 @@
   </div>
 
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="scrollTo('sec-dashboard',this)">
+    <button class="nav-item active" onclick="navScrollTo('sec-dashboard',this)">
       <span class="nav-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
       Dashboard
     </button>
-    <button class="nav-item" onclick="scrollTo('sec-prescription',this)">
+    <button class="nav-item" onclick="navScrollTo('sec-prescription',this)">
       <span class="nav-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></span>
       Prescription
     </button>
-    <button class="nav-item" onclick="scrollTo('sec-expense',this)">
-      <span class="nav-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
-      Monthly Expense
-    </button>
-    <button class="nav-item" onclick="scrollTo('sec-checklist',this)">
+
+    <button class="nav-item" onclick="navScrollTo('sec-checklist',this)">
       <span class="nav-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
       Checklist
     </button>
-    <button class="nav-item" onclick="scrollTo('sec-schedule',this)">
+    <button class="nav-item" onclick="navScrollTo('sec-schedule',this)">
       <span class="nav-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
       Schedule
     </button>
-    <button class="nav-item" onclick="scrollTo('sec-history',this)">
+    <button class="nav-item" onclick="navScrollTo('sec-history',this)">
       <span class="nav-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
       History
     </button>
@@ -552,18 +560,6 @@
     </div>
   </div>
 
-  <!-- ══ SECTION: MONTHLY EXPENSE ══ -->
-  <div class="scroll-section" id="sec-expense">
-    <div class="section-divider"><div class="section-divider-label">💰 Monthly Expense</div><div class="section-divider-line"></div></div>
-    <div class="glass-card">
-      <table class="expense-table">
-        <thead><tr><th>Medicine</th><th>Qty / Month</th><th>Unit Price (₹)</th><th>Total (₹)</th></tr></thead>
-        <tbody id="expenseTableBody"><tr><td colspan="4" style="text-align:center;padding:2rem;color:var(--gray-400)">Analyse a prescription first.</td></tr></tbody>
-        <tfoot><tr style="background:rgba(239,248,255,0.7)"><td colspan="3" style="padding:10px 12px;font-weight:600;color:var(--blue-700)">Estimated Monthly Total</td><td class="expense-total" style="padding:10px 12px" id="expenseTotal">₹ 0</td></tr></tfoot>
-      </table>
-    </div>
-  </div>
-
   <!-- ══ SECTION: CHECKLIST ══ -->
   <div class="scroll-section" id="sec-checklist">
     <div class="section-divider"><div class="section-divider-label">✅ Checklist</div><div class="section-divider-line"></div></div>
@@ -622,23 +618,43 @@
   }
 
   // ── SMOOTH SCROLL NAV ────────────────────────────────────
-  function scrollTo(sectionId, btn) {
-    document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const sections = ['sec-dashboard','sec-prescription','sec-checklist','sec-schedule','sec-history'];
+  let isScrollingFromClick = false;
+
+  function navScrollTo(sectionId, btn) {
+    const el = document.getElementById(sectionId);
+    if (!el) return;
+    // Immediately set active on click
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     btn.classList.add('active');
+    // Flag so scroll listener doesn't override the active state mid-animation
+    isScrollingFromClick = true;
+    // Use el.scrollIntoView with fallback to direct offsetTop scroll
+    try {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch(e) {
+      window.scrollTo(0, el.offsetTop - 20);
+    }
+    // Release flag after animation completes
+    setTimeout(() => { isScrollingFromClick = false; }, 800);
   }
 
-  // Highlight nav on scroll
-  window.addEventListener('scroll', () => {
-    const sections = ['sec-dashboard','sec-prescription','sec-expense','sec-checklist','sec-schedule','sec-history'];
+  // Auto-highlight nav as user scrolls
+  function onScroll() {
+    if (isScrollingFromClick) return; // don't override click-set active state
     const navItems = document.querySelectorAll('.nav-item');
     let current = 0;
     sections.forEach((id, i) => {
       const el = document.getElementById(id);
-      if (el && el.getBoundingClientRect().top <= 120) current = i;
+      if (el && el.getBoundingClientRect().top <= 140) current = i;
     });
     navItems.forEach((n, i) => n.classList.toggle('active', i === current));
-  }, { passive: true });
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  // Also listen on .main in case it's the scrolling container
+  const mainEl = document.getElementById('mainContent');
+  if (mainEl) mainEl.addEventListener('scroll', onScroll, { passive: true });
 
   function setLang(lang, e) {
     currentLang = lang;
