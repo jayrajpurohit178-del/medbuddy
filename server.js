@@ -31,8 +31,8 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    if (allowed.includes(file.mimetype)) cb(null, true);
+    const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'audio/webm', 'audio/mp4', 'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/x-m4a', 'audio/mp3'];
+    if (allowed.includes(file.mimetype) || file.mimetype.startsWith('audio/')) cb(null, true);
     else cb(new Error('Only PDF and image files are allowed'));
   }
 });
@@ -116,21 +116,48 @@ const TEXT_MODELS = [
 ];
 
 function buildPrompt(lang, age) {
-  const langInstruction = lang === 'hi'
-    ? 'Respond ENTIRELY in Hindi (Devanagari script). Keep JSON keys in English.'
-    : 'Respond in clear, simple English.';
-  const ageNote = age ? `The patient is ${age} years old. Adjust explanation accordingly.` : '';
+  const langMap = {
+    hi: 'Respond ENTIRELY in Hindi (Devanagari script). Keep JSON keys in English.',
+    gu: 'Respond ENTIRELY in Gujarati (Gujarati script). Keep JSON keys in English.',
+    en: 'Respond in clear, simple English that anyone can understand.'
+  };
+  const langInstruction = langMap[lang] || langMap.en;
+  const ageNote = age ? `The patient is ${age} years old. Adjust language complexity accordingly.` : '';
 
-  return `You are MedDecode, a medical document simplifier. ONLY simplify what is written in the document. Do NOT add outside advice, suggest alternatives, or invent information.
+  return `You are MedDecode, an expert AI medical report analyzer for Indian patients. You can analyze ANY kind of medical document including:
+- Prescriptions and discharge summaries
+- Blood test reports (CBC, LFT, KFT, lipid profile, thyroid, HbA1c, blood sugar, etc.)
+- MRI, CT scan, X-ray, Ultrasound and Sonography reports
+- ECG and Echo cardiac reports
+- Urine analysis reports
+- Pathology and biopsy reports
+- Any other medical or lab report
 
 ${langInstruction}
 ${ageNote}
 
-Analyze the prescription or discharge summary and return ONLY a valid JSON object — no markdown, no explanation, just raw JSON:
+RULES:
+- ONLY explain what is written in the document. Do NOT add outside advice or invent information.
+- For lab reports: explain what each abnormal value means in simple language.
+- For imaging reports (MRI/CT/USG/X-ray): explain all findings in simple terms a patient understands.
+- Extract EVERY medical jargon term and explain it simply.
+- Medications: match EXACTLY what is written. Wrong dosage = critical failure.
+
+Analyze the provided medical document and return ONLY a valid JSON object. No markdown, no explanation, just raw JSON:
 
 {
-  "familySummary": "One-line summary a family member can instantly understand",
-  "diagnosis": "Plain-language explanation of the condition",
+  "reportType": "Type of report e.g. Blood Test Report / MRI Report / Prescription / Sonography Report / ECG Report",
+  "familySummary": "One simple sentence a family member can instantly understand about this report",
+  "diagnosis": "Plain-language explanation of the main finding or condition and what it means for the patient",
+  "keyFindings": [
+    {
+      "parameter": "e.g. Hemoglobin or Blood Sugar or Impression",
+      "value": "Actual value from report e.g. 9.2 g/dL",
+      "normalRange": "Normal range if applicable e.g. 12-16 g/dL",
+      "status": "Normal or High or Low or Abnormal",
+      "meaning": "What this value means in simple language for the patient"
+    }
+  ],
   "medications": [
     {
       "name": "Medicine name exactly as written",
@@ -141,67 +168,20 @@ Analyze the prescription or discharge summary and return ONLY a valid JSON objec
     }
   ],
   "sideEffects": ["Side effect 1", "Side effect 2", "Side effect 3"],
-  "doctorAlert": "When to call doctor immediately (1 sentence or null)",
-  "checklist": ["Follow-up item 1", "Diet restriction 1", "Activity limit 1"],
+  "doctorAlert": "When to urgently call doctor based on this report, 1 sentence, or null if nothing urgent",
+  "checklist": ["Follow-up test or action 1", "Diet restriction 1", "Activity limit 1"],
   "comparisons": [
-    { "original": "Medical jargon from document", "plain": "Plain explanation" }
+    { "original": "Exact medical jargon term or abbreviation from the document", "plain": "Simple plain-language explanation of what this term means" }
   ]
 }
 
-CRITICAL: medications must match the document exactly. Wrong dosage = failure. Return ONLY the JSON object.`;
+CRITICAL RULES:
+1. comparisons array must include EVERY medical jargon term, abbreviation, and technical phrase from the document. Minimum 6-10 items.
+2. keyFindings must list ALL test values and imaging findings. Empty array only if pure prescription with no lab values.
+3. If medications are not present in the report, return an empty medications array.
+4. Return ONLY the JSON object. Nothing else whatsoever.`;
 }
 
-async function callOpenRouter(messages, useVision = false) {
-  const models = useVision ? VISION_MODELS : TEXT_MODELS;
-
-  for (const model of models) {
-    try {
-      console.log(`🔄 Trying model: ${model}`);
-      const res = await axios.post(
-        'https://openrouter.ai/api/v1/chat/completions',
-        {
-          model,
-          messages,
-          max_tokens: 2000,
-          temperature: 0.1,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://meddecode.app',
-            'X-Title': 'MedDecode',
-          },
-          timeout: 60000,
-        }
-      );
-
-      const content = res.data.choices?.[0]?.message?.content;
-      if (content) {
-        console.log(`✅ Success with: ${model}`);
-        return content;
-      }
-    } catch (err) {
-      const status = err.response?.status;
-      const errMsg = err.response?.data?.error?.message || err.message;
-      console.warn(`⚠️  ${model} failed (${status}): ${errMsg}`);
-      if (status === 401) throw new Error('Invalid OpenRouter API key');
-      // continue to next model
-    }
-  }
-  throw new Error('All models failed. Check your OpenRouter API key and quota.');
-}
-
-function parseAIResponse(raw) {
-  let text = raw.trim();
-  // Strip markdown fences
-  text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
-  // Find JSON object in response
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start !== -1 && end !== -1) text = text.slice(start, end + 1);
-  return JSON.parse(text);
-}
 
 // ─── ROUTES ───────────────────────────────────────────────────────────────────
 
@@ -269,8 +249,27 @@ app.post('/api/analyze', upload.single('file'), async (req, res) => {
       }];
       useVision = true;
 
+    } else if (inputType === 'audio') {
+      // Audio/voice recording — transcribe via prompt
+      if (!req.file) return res.status(400).json({ error: 'No audio file uploaded.' });
+      filename = req.file.originalname;
+      // Send audio as base64 to vision/audio capable model
+      const base64 = req.file.buffer.toString('base64');
+      const mimeType = req.file.mimetype || 'audio/webm';
+      messages = [{
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt + '\n\nThis is an audio recording of a doctor or patient describing medical information, a prescription, or health condition. Please listen carefully and extract all medical information, then analyze it as a medical document.' },
+          {
+            type: 'image_url',
+            image_url: { url: `data:${mimeType};base64,${base64}` }
+          }
+        ]
+      }];
+      useVision = true;
+
     } else {
-      return res.status(400).json({ error: 'Invalid inputType. Use: text, pdf, or image' });
+      return res.status(400).json({ error: 'Invalid inputType. Use: text, pdf, image, or audio' });
     }
 
     const rawResponse = await callOpenRouter(messages, useVision);
