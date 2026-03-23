@@ -9,7 +9,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
-const DB_FILE = path.join(__dirname, 'data', 'medbuddy_db.xlsx');
+const DB_FILE = path.join(__dirname, 'data', 'meddecode_db.xlsx');
 
 // Ensure data directory exists
 if (!fs.existsSync(path.join(__dirname, 'data'))) {
@@ -17,13 +17,19 @@ if (!fs.existsSync(path.join(__dirname, 'data'))) {
 }
 
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Multer config: store files in memory
-const storage = multer.memoryStorage();
+// Multer — memory storage
 const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (allowed.includes(file.mimetype)) cb(null, true);
@@ -31,39 +37,31 @@ const upload = multer({
   }
 });
 
-// ─── XLSX DB HELPERS ──────────────────────────────────────────────────────────
+// ─── XLSX DB ──────────────────────────────────────────────────────────────────
 
 async function initDB() {
+  if (fs.existsSync(DB_FILE)) return;
   const wb = new ExcelJS.Workbook();
-  if (!fs.existsSync(DB_FILE)) {
-    const ws = wb.addWorksheet('Analyses');
-    ws.columns = [
-      { header: 'ID', key: 'id', width: 38 },
-      { header: 'Filename', key: 'filename', width: 30 },
-      { header: 'InputType', key: 'inputType', width: 12 },
-      { header: 'Language', key: 'language', width: 10 },
-      { header: 'Age', key: 'age', width: 6 },
-      { header: 'Result', key: 'result', width: 60 },
-      { header: 'CreatedAt', key: 'createdAt', width: 24 },
-    ];
-    // Style header row
-    ws.getRow(1).font = { bold: true };
-    ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF006DC6' } };
-    ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
-    await wb.xlsx.writeFile(DB_FILE);
-  }
-  return wb;
+  const ws = wb.addWorksheet('Analyses');
+  ws.columns = [
+    { header: 'ID',         key: 'id',        width: 38 },
+    { header: 'Filename',   key: 'filename',  width: 30 },
+    { header: 'InputType',  key: 'inputType', width: 12 },
+    { header: 'Language',   key: 'language',  width: 10 },
+    { header: 'Age',        key: 'age',       width: 6  },
+    { header: 'Result',     key: 'result',    width: 60 },
+    { header: 'CreatedAt',  key: 'createdAt', width: 24 },
+  ];
+  ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+  ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF006DC6' } };
+  await wb.xlsx.writeFile(DB_FILE);
 }
 
 async function saveToDB(record) {
   const wb = new ExcelJS.Workbook();
-  if (fs.existsSync(DB_FILE)) {
-    await wb.xlsx.readFile(DB_FILE);
-  } else {
-    await initDB();
-    await wb.xlsx.readFile(DB_FILE);
-  }
-  const ws = wb.getWorksheet('Analyses');
+  if (fs.existsSync(DB_FILE)) await wb.xlsx.readFile(DB_FILE);
+  else await initDB();
+  const ws = wb.getWorksheet('Analyses') || wb.addWorksheet('Analyses');
   ws.addRow({
     id: record.id,
     filename: record.filename || '',
@@ -83,117 +81,112 @@ async function getHistory() {
   const ws = wb.getWorksheet('Analyses');
   const rows = [];
   ws.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return; // skip header
+    if (rowNumber === 1) return;
     rows.push({
-      id: row.getCell('ID').value,
-      filename: row.getCell('Filename').value,
+      id:        row.getCell('ID').value,
+      filename:  row.getCell('Filename').value,
       inputType: row.getCell('InputType').value,
-      language: row.getCell('Language').value,
-      age: row.getCell('Age').value,
-      result: row.getCell('Result').value,
+      language:  row.getCell('Language').value,
+      age:       row.getCell('Age').value,
+      result:    row.getCell('Result').value,
       createdAt: row.getCell('CreatedAt').value,
     });
   });
-  return rows.reverse(); // newest first
+  return rows.reverse();
 }
 
-// ─── OPENROUTER AI ────────────────────────────────────────────────────────────
+// ─── AI MODELS ────────────────────────────────────────────────────────────────
 
-const MODELS_TO_TRY = [
+// Vision-capable models (for image + PDF inputs)
+const VISION_MODELS = [
   'google/gemini-2.0-flash-exp:free',
+  'google/gemini-flash-1.5-8b',
   'google/gemini-flash-1.5',
+  'openai/gpt-4o-mini',
+  'anthropic/claude-3-haiku',
+];
+
+// Text-only models (for plain text inputs — cheaper/faster)
+const TEXT_MODELS = [
+  'google/gemini-2.0-flash-exp:free',
   'meta-llama/llama-3.1-8b-instruct:free',
   'mistralai/mistral-7b-instruct:free',
+  'google/gemini-flash-1.5',
   'openai/gpt-4o-mini',
 ];
 
-function buildPrompt(text, lang, age) {
+function buildPrompt(lang, age) {
   const langInstruction = lang === 'hi'
-    ? 'Respond ENTIRELY in Hindi (Devanagari script). All text including keys must be in Hindi where appropriate, but keep JSON keys in English.'
+    ? 'Respond ENTIRELY in Hindi (Devanagari script). Keep JSON keys in English.'
     : 'Respond in clear, simple English.';
+  const ageNote = age ? `The patient is ${age} years old. Adjust explanation accordingly.` : '';
 
-  const ageNote = age ? `The patient is ${age} years old. Adjust language complexity accordingly.` : '';
-
-  return `You are MedBuddy, a medical document simplifier. Your job is ONLY to simplify what is written in the document — do NOT add medical advice, suggest alternative medicines, or include outside information.
+  return `You are MedDecode, a medical document simplifier. ONLY simplify what is written in the document. Do NOT add outside advice, suggest alternatives, or invent information.
 
 ${langInstruction}
 ${ageNote}
 
-Analyze the following medical prescription or discharge summary and return ONLY a valid JSON object with this exact structure (no markdown, no explanation, just JSON):
+Analyze the prescription or discharge summary and return ONLY a valid JSON object — no markdown, no explanation, just raw JSON:
 
 {
   "familySummary": "One-line summary a family member can instantly understand",
-  "diagnosis": "Plain-language explanation of the condition (what it is, explained like talking to a friend)",
+  "diagnosis": "Plain-language explanation of the condition",
   "medications": [
     {
-      "name": "Medicine name",
+      "name": "Medicine name exactly as written",
       "dosage": "e.g. 500mg",
       "timing": "e.g. Twice a day after meals",
       "duration": "e.g. 5 days",
       "instructions": "e.g. Take with water"
     }
   ],
-  "sideEffects": [
-    "Side effect 1",
-    "Side effect 2",
-    "Side effect 3"
-  ],
-  "doctorAlert": "When to call the doctor immediately (1 sentence, or null if not mentioned)",
-  "checklist": [
-    "Follow-up test or action item 1",
-    "Diet restriction 1",
-    "Activity limit 1"
-  ],
+  "sideEffects": ["Side effect 1", "Side effect 2", "Side effect 3"],
+  "doctorAlert": "When to call doctor immediately (1 sentence or null)",
+  "checklist": ["Follow-up item 1", "Diet restriction 1", "Activity limit 1"],
   "comparisons": [
-    {
-      "original": "Medical jargon phrase from document",
-      "plain": "Plain-language explanation"
-    }
+    { "original": "Medical jargon from document", "plain": "Plain explanation" }
   ]
 }
 
-CRITICAL RULES:
-- medications array must exactly match what is written in the document — wrong dosage = failure
-- Do not invent or add anything not in the document
-- sideEffects should be top 2-3 things to watch for based on the medicines listed
-- comparisons should include 2-4 key jargon terms from the document
-
-Medical Document:
----
-${text}
----`;
+CRITICAL: medications must match the document exactly. Wrong dosage = failure. Return ONLY the JSON object.`;
 }
 
-async function callOpenRouter(messages, isVision = false) {
-  for (const model of MODELS_TO_TRY) {
-    try {
-      const body = {
-        model,
-        messages,
-        max_tokens: 2000,
-        temperature: 0.1,
-      };
+async function callOpenRouter(messages, useVision = false) {
+  const models = useVision ? VISION_MODELS : TEXT_MODELS;
 
-      const res = await axios.post('https://openrouter.ai/api/v1/chat/completions', body, {
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://medbuddy.app',
-          'X-Title': 'MedBuddy',
+  for (const model of models) {
+    try {
+      console.log(`🔄 Trying model: ${model}`);
+      const res = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model,
+          messages,
+          max_tokens: 2000,
+          temperature: 0.1,
         },
-        timeout: 60000,
-      });
+        {
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://meddecode.app',
+            'X-Title': 'MedDecode',
+          },
+          timeout: 60000,
+        }
+      );
 
       const content = res.data.choices?.[0]?.message?.content;
       if (content) {
-        console.log(`✅ Used model: ${model}`);
+        console.log(`✅ Success with: ${model}`);
         return content;
       }
     } catch (err) {
       const status = err.response?.status;
-      console.warn(`⚠️  Model ${model} failed (${status}): ${err.message}`);
+      const errMsg = err.response?.data?.error?.message || err.message;
+      console.warn(`⚠️  ${model} failed (${status}): ${errMsg}`);
       if (status === 401) throw new Error('Invalid OpenRouter API key');
-      // Try next model
+      // continue to next model
     }
   }
   throw new Error('All models failed. Check your OpenRouter API key and quota.');
@@ -201,82 +194,91 @@ async function callOpenRouter(messages, isVision = false) {
 
 function parseAIResponse(raw) {
   let text = raw.trim();
-  // Strip markdown code fences if present
-  text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+  // Strip markdown fences
+  text = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+  // Find JSON object in response
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start !== -1 && end !== -1) text = text.slice(start, end + 1);
   return JSON.parse(text);
 }
 
 // ─── ROUTES ───────────────────────────────────────────────────────────────────
 
-// Analyze endpoint
 app.post('/api/analyze', upload.single('file'), async (req, res) => {
   try {
     if (!OPENROUTER_API_KEY) {
-      return res.status(500).json({ error: 'OPENROUTER_API_KEY is not configured on the server.' });
+      return res.status(500).json({ error: 'OPENROUTER_API_KEY is not set on the server.' });
     }
 
     const { inputType, lang = 'en', age, text } = req.body;
+    const prompt = buildPrompt(lang, age);
     let messages;
     let filename = null;
+    let useVision = false;
 
     if (inputType === 'text') {
-      if (!text) return res.status(400).json({ error: 'No text provided.' });
-      messages = [{ role: 'user', content: buildPrompt(text, lang, age) }];
+      // Plain text — no vision needed
+      if (!text || !text.trim()) return res.status(400).json({ error: 'No text provided.' });
+      messages = [{
+        role: 'user',
+        content: `${prompt}\n\nMedical Document:\n---\n${text.trim()}\n---`
+      }];
+      useVision = false;
 
     } else if (inputType === 'pdf') {
-      if (!req.file) return res.status(400).json({ error: 'No PDF file uploaded.' });
+      // PDF — send as base64 image to vision model
+      if (!req.file) return res.status(400).json({ error: 'No PDF uploaded.' });
       filename = req.file.originalname;
-
-      // Send PDF as base64 to vision-capable model
       const base64 = req.file.buffer.toString('base64');
+
       messages = [{
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: buildPrompt('[See attached PDF document]', lang, age),
-          },
+          { type: 'text', text: prompt },
           {
             type: 'image_url',
             image_url: {
               url: `data:application/pdf;base64,${base64}`,
-            },
-          },
-        ],
+              detail: 'high'
+            }
+          }
+        ]
       }];
+      useVision = true;
 
     } else if (inputType === 'image') {
-      if (!req.file) return res.status(400).json({ error: 'No image file uploaded.' });
+      // Image — send as base64 to vision model
+      if (!req.file) return res.status(400).json({ error: 'No image uploaded.' });
       filename = req.file.originalname;
       const base64 = req.file.buffer.toString('base64');
-      const mimeType = req.file.mimetype;
+      const mimeType = req.file.mimetype; // e.g. image/jpeg
 
       messages = [{
         role: 'user',
         content: [
-          {
-            type: 'text',
-            text: buildPrompt('[See attached prescription image]', lang, age),
-          },
+          { type: 'text', text: prompt },
           {
             type: 'image_url',
             image_url: {
               url: `data:${mimeType};base64,${base64}`,
-            },
-          },
-        ],
+              detail: 'high'
+            }
+          }
+        ]
       }];
+      useVision = true;
 
     } else {
-      return res.status(400).json({ error: 'Invalid inputType.' });
+      return res.status(400).json({ error: 'Invalid inputType. Use: text, pdf, or image' });
     }
 
-    const rawResponse = await callOpenRouter(messages);
+    const rawResponse = await callOpenRouter(messages, useVision);
     const parsed = parseAIResponse(rawResponse);
     parsed.lang = lang;
 
-    // Save to XLSX DB
-    const record = {
+    // Save to DB
+    await saveToDB({
       id: uuidv4(),
       filename,
       inputType,
@@ -284,36 +286,148 @@ app.post('/api/analyze', upload.single('file'), async (req, res) => {
       age: age || null,
       result: parsed,
       createdAt: new Date().toISOString(),
-    };
-    await saveToDB(record);
+    });
 
     res.json(parsed);
 
   } catch (err) {
-    console.error('Analyze error:', err.message);
+    console.error('❌ Analyze error:', err.message);
     res.status(500).json({ error: err.message || 'Internal server error' });
   }
 });
 
-// History endpoint
+// History
 app.get('/api/history', async (req, res) => {
   try {
-    const history = await getHistory();
-    res.json(history);
+    res.json(await getHistory());
   } catch (err) {
-    console.error('History error:', err.message);
     res.status(500).json({ error: 'Could not load history' });
   }
 });
 
-// Download DB as Excel
-app.get('/api/export', async (req, res) => {
+// Download DB
+app.get('/api/export', (req, res) => {
+  if (!fs.existsSync(DB_FILE)) return res.status(404).json({ error: 'No data yet' });
+  res.download(DB_FILE, 'meddecode_analyses.xlsx');
+});
+
+
+// Config — exposes API key safely to frontend for nurse chatbot
+app.get('/api/config', (req, res) => {
+  res.json({ key: OPENROUTER_API_KEY || '' });
+});
+
+// Auth — Signup
+app.post('/api/signup', async (req, res) => {
   try {
-    if (!fs.existsSync(DB_FILE)) {
-      return res.status(404).json({ error: 'No data yet' });
+    const { name, email, phone, password } = req.body;
+    if (!name || (!email && !phone) || !password)
+      return res.status(400).json({ error: 'Missing required fields' });
+    if (password.length < 6)
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    // Simple: store in xlsx
+    const wb = new ExcelJS.Workbook();
+    const userFile = path.join(__dirname, 'data', 'users.xlsx');
+    if (require('fs').existsSync(userFile)) await wb.xlsx.readFile(userFile);
+    let ws = wb.getWorksheet('Users');
+    if (!ws) {
+      ws = wb.addWorksheet('Users');
+      ws.columns = [
+        {header:'ID',key:'id',width:38},{header:'Name',key:'name',width:24},
+        {header:'Email',key:'email',width:30},{header:'Phone',key:'phone',width:16},
+        {header:'Password',key:'password',width:20},{header:'CreatedAt',key:'createdAt',width:24}
+      ];
     }
-    res.download(DB_FILE, 'medbuddy_analyses.xlsx');
+    // Check duplicate
+    let exists = false;
+    ws.eachRow((row,i)=>{ if(i===1) return; if(row.getCell('Email').value===email||row.getCell('Phone').value===phone) exists=true; });
+    if(exists) return res.status(400).json({error:'Account already exists with this email or phone'});
+    ws.addRow({id:require('crypto').randomUUID(),name,email:email||'',phone:phone||'',password,createdAt:new Date().toISOString()});
+    await wb.xlsx.writeFile(userFile);
+    res.json({ success: true, message: 'Account created' });
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Auth — Login
+app.post('/api/login', async (req, res) => {
+  try {
+    const { identifier, password } = req.body;
+    if (!identifier || !password) return res.status(400).json({ error: 'Missing credentials' });
+    const userFile = path.join(__dirname, 'data', 'users.xlsx');
+    if (!require('fs').existsSync(userFile)) return res.status(401).json({ error: 'No accounts found. Please sign up.' });
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.readFile(userFile);
+    const ws = wb.getWorksheet('Users');
+    let found = false;
+    ws.eachRow((row,i)=>{
+      if(i===1) return;
+      const em = row.getCell('Email').value;
+      const ph = row.getCell('Phone').value;
+      const pw = row.getCell('Password').value;
+      if((em===identifier||ph===identifier) && pw===password) found=true;
+    });
+    if(!found) return res.status(401).json({error:'Invalid email/phone or password'});
+    res.json({ success: true, message: 'Login successful' });
+  } catch(err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// ── NURSE MAYA CHAT PROXY ────────────────────────────────────────────────────
+app.post('/api/chat', async (req, res) => {
+  try {
+    if (!OPENROUTER_API_KEY) {
+      return res.status(500).json({ error: 'OPENROUTER_API_KEY not set on server.' });
+    }
+
+    const { messages } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ error: 'Invalid messages array.' });
+    }
+
+    const MODELS = [
+      'google/gemini-2.0-flash-exp:free',
+      'meta-llama/llama-3.1-8b-instruct:free',
+      'mistralai/mistral-7b-instruct:free',
+      'google/gemini-flash-1.5',
+      'openai/gpt-4o-mini',
+    ];
+
+    let reply = null;
+    for (const model of MODELS) {
+      try {
+        console.log(`🤖 Nurse Maya trying: ${model}`);
+        const response = await axios.post(
+          'https://openrouter.ai/api/v1/chat/completions',
+          { model, messages, max_tokens: 500, temperature: 0.75 },
+          {
+            headers: {
+              'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://meddecode.app',
+              'X-Title': 'MedDecode Nurse Maya',
+            },
+            timeout: 30000,
+          }
+        );
+        reply = response.data?.choices?.[0]?.message?.content;
+        if (reply) { console.log(`✅ Nurse Maya replied via: ${model}`); break; }
+      } catch (err) {
+        console.warn(`⚠️  ${model} failed: ${err.response?.status} ${err.message}`);
+        if (err.response?.status === 401) {
+          return res.status(401).json({ error: 'Invalid API key. Check OPENROUTER_API_KEY on Render.' });
+        }
+      }
+    }
+
+    if (!reply) return res.status(502).json({ error: 'All AI models failed. Try again later.' });
+    res.json({ reply });
+
   } catch (err) {
+    console.error('Chat error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
@@ -323,9 +437,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Init DB on startup then listen
+// Start
 initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🏥 MedBuddy server running on port ${PORT}`);
-  });
+  app.listen(PORT, () => console.log(`🏥 MedDecode server running on port ${PORT}`));
 });
