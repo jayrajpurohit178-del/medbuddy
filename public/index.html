@@ -562,133 +562,6 @@ textarea:focus{border-color:var(--b400);}
     .auth-error.show { display:block; }
 
     
-    /* ── AUDIO / MIC ── */
-    .upload-row {
-      display:grid;grid-template-columns:1fr 1fr;
-      gap:8px;margin-bottom:8px;
-    }
-    .dz.dz-small { padding:0.85rem 0.5rem; }
-    .dz.dz-small .dz-icon { width:30px;height:30px;border-radius:8px;margin-bottom:6px; }
-    .dz.dz-small h3 { font-size:0.76rem; }
-    .dz.dz-small p  { font-size:0.65rem; }
-
-    .mic-box {
-      border:2px dashed var(--teal);
-      border-radius:12px;
-      padding:0.85rem 0.5rem;
-      text-align:center;
-      background:rgba(0,194,178,0.06);
-      display:flex;flex-direction:column;
-      align-items:center;justify-content:center;
-      gap:6px;
-      cursor:pointer;
-      transition:all 0.2s;
-      position:relative;
-    }
-    .mic-box:hover { background:rgba(0,194,178,0.12);border-color:var(--teal); }
-    .mic-icon-wrap {
-      width:30px;height:30px;border-radius:8px;
-      background:linear-gradient(135deg,var(--teal),#008f82);
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 3px 10px rgba(0,194,178,0.35);
-      transition:all 0.2s;
-    }
-    .mic-box h3 { font-size:0.76rem;color:var(--text);font-family:var(--fd); }
-    .mic-box p  { font-size:0.65rem;color:var(--text-muted); }
-
-    /* Recording active state */
-    .mic-box.recording {
-      border-color:#ef4444;
-      background:rgba(239,68,68,0.07);
-      animation:rec-pulse 1.2s ease-in-out infinite;
-    }
-    .mic-box.recording .mic-icon-wrap {
-      background:linear-gradient(135deg,#ef4444,#b91c1c);
-      box-shadow:0 3px 14px rgba(239,68,68,0.45);
-    }
-    @keyframes rec-pulse {
-      0%,100%{ box-shadow:0 0 0 0 rgba(239,68,68,0.3); }
-      50%    { box-shadow:0 0 0 8px rgba(239,68,68,0); }
-    }
-    .rec-timer {
-      font-size:0.7rem;font-weight:600;color:#ef4444;
-      font-variant-numeric:tabular-nums;
-      display:none;
-    }
-    .rec-timer.show { display:block; }
-    .rec-dot {
-      width:7px;height:7px;border-radius:50%;
-      background:#ef4444;display:none;
-      animation:blink 1s step-start infinite;
-    }
-    .rec-dot.show { display:inline-block; }
-    @keyframes blink { 50%{opacity:0;} }
-
-    /* Audio upload option */
-    .audio-upload-row {
-      display:flex;align-items:center;gap:6px;
-      margin-top:6px;margin-bottom:4px;
-    }
-    .audio-upload-btn {
-      flex:1;padding:6px 8px;border:1.5px solid var(--teal);
-      border-radius:8px;background:transparent;
-      font-family:var(--fb);font-size:0.72rem;font-weight:500;
-      color:var(--teal);cursor:pointer;transition:all 0.18s;
-      display:flex;align-items:center;justify-content:center;gap:5px;
-      position:relative;
-    }
-    .audio-upload-btn:hover { background:rgba(0,194,178,0.08); }
-    .audio-upload-btn input {
-      position:absolute;inset:0;opacity:0;cursor:pointer;
-    }
-    .audio-prev {
-      display:none;align-items:center;gap:6px;
-      background:rgba(0,194,178,0.08);border:1px solid var(--teal);
-      border-radius:8px;padding:5px 10px;margin-top:5px;
-      font-size:0.75rem;color:var(--teal);
-    }
-    .audio-prev.show { display:flex; }
-    .audio-prev span { flex:1; }
-    .rm-audio { background:none;border:none;cursor:pointer;color:var(--danger);font-size:0.85rem; }
-
-    /* ── READ ALOUD ── */
-    .read-aloud-bar {
-      display:none;align-items:center;gap:8px;
-      background:linear-gradient(135deg,rgba(0,194,178,0.12),rgba(54,167,249,0.1));
-      border:1px solid rgba(0,194,178,0.25);
-      border-radius:10px;padding:8px 12px;margin-bottom:10px;
-    }
-    .read-aloud-bar.show { display:flex; }
-    .ra-btn {
-      width:30px;height:30px;border-radius:8px;border:none;
-      background:linear-gradient(135deg,var(--teal),#008f82);
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;transition:all 0.2s;flex-shrink:0;
-      box-shadow:0 2px 8px rgba(0,194,178,0.3);
-    }
-    .ra-btn:hover { transform:scale(1.08); }
-    .ra-label { font-size:0.76rem;color:var(--text-sub);flex:1; }
-    .ra-wave {
-      display:flex;align-items:center;gap:2px;height:16px;
-      opacity:0;transition:opacity 0.3s;
-    }
-    .ra-wave.active { opacity:1; }
-    .ra-bar {
-      width:3px;border-radius:99px;
-      background:var(--teal);
-      animation:wave-bar 0.8s ease-in-out infinite alternate;
-    }
-    .ra-bar:nth-child(1){ height:4px;animation-delay:0s; }
-    .ra-bar:nth-child(2){ height:10px;animation-delay:0.1s; }
-    .ra-bar:nth-child(3){ height:16px;animation-delay:0.2s; }
-    .ra-bar:nth-child(4){ height:10px;animation-delay:0.3s; }
-    .ra-bar:nth-child(5){ height:6px;animation-delay:0.4s; }
-    @keyframes wave-bar {
-      from{ transform:scaleY(0.4); }
-      to  { transform:scaleY(1); }
-    }
-
-    
     /* ── NURSE CHATBOT ── */
     .nurse-wrap {
       position:fixed;bottom:90px;right:20px;z-index:600;
@@ -1329,48 +1202,11 @@ textarea:focus{border-color:var(--b400);}
         <button class="utab" onclick="swTab('text',event)">✏️ Text</button>
       </div>
       <div class="upanel active" id="up-pdf">
-        <div class="upload-row">
-          <!-- PDF drop zone (smaller) -->
-          <div class="dz dz-small" id="pdfDrop">
-            <input type="file" accept=".pdf" id="pdfInp" onchange="hFile(this,'pdf')"/>
-            <div class="dz-icon"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-            <h3 id="dzPdfTitle">Click to upload PDF</h3>
-            <p id="dzPdfSub">Up to 10MB</p>
-          </div>
-          <!-- MIC box -->
-          <div class="mic-box" id="micBox" onclick="toggleRec()">
-            <div class="mic-icon-wrap" id="micIconWrap">
-              <svg id="micSvg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
-                <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
-                <path d="M19 10v2a7 7 0 01-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="23"/>
-                <line x1="8" y1="23" x2="16" y2="23"/>
-              </svg>
-            </div>
-            <div style="display:flex;align-items:center;gap:4px">
-              <span class="rec-dot" id="recDot"></span>
-              <span class="rec-timer" id="recTimer">0:00</span>
-            </div>
-            <h3 id="micTitle">Record Voice</h3>
-            <p id="micSub">Tap to start</p>
-          </div>
-        </div>
-        <!-- Upload existing audio -->
-        <div class="audio-upload-row">
-          <label class="audio-upload-btn">
-            <input type="file" accept="audio/*" id="audioInp" onchange="hAudioFile(this)"/>
-            🎵 <span id="uploadAudioLabel">Upload Recording</span>
-          </label>
-        </div>
-        <div class="audio-prev" id="audioPrev">
-          🎙️ <span id="audioName"></span>
-          <button class="rm-audio" onclick="rmAudio()">✕</button>
-        </div>
-        <!-- Voice transcript box -->
-        <div id="voiceTranscriptWrap" style="display:none;margin-top:6px;">
-          <div style="font-size:0.7rem;font-weight:600;color:var(--teal);margin-bottom:4px;">🎤 Voice Transcript (editable)</div>
-          <textarea id="voiceTranscript" style="min-height:70px;font-size:0.8rem;" placeholder="Your speech will appear here… you can edit before analyzing"></textarea>
-          <button onclick="analyzeTranscript()" style="width:100%;margin-top:6px;padding:8px;background:linear-gradient(135deg,var(--teal),#008f82);color:white;border:none;border-radius:8px;font-family:var(--fd);font-size:0.85rem;font-weight:600;cursor:pointer;">🔍 Analyze Voice Text</button>
+        <div class="dz" id="pdfDrop">
+          <input type="file" accept=".pdf" id="pdfInp" onchange="hFile(this,'pdf')"/>
+          <div class="dz-icon"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <h3 id="dzPdfTitle">Click to upload PDF</h3>
+          <p id="dzPdfSub">Up to 10MB</p>
         </div>
         <div class="fprev" id="pPrev"><span>📄 </span><span id="pName"></span><button class="rmf" onclick="rmF('pdf')">✕</button></div>
       </div>
@@ -1836,22 +1672,24 @@ textarea:focus{border-color:var(--b400);}
     sc.style.display='block';
     const t = T[lang];
 
-    // Build keyFindings table if present
-    const kfHtml = (data.keyFindings && data.keyFindings.length) ? `
+    // Build report values table (works for both keyFindings and reportValues)
+    const rvData = data.reportValues || data.keyFindings || [];
+    const kfHtml = rvData.length ? `
       <div class="res-block">
-        <div class="rb-title"><div class="rb-icon ti-teal">🔬</div>Key Findings</div>
+        <div class="rb-title"><div class="rb-icon ti-teal">🔬</div>Report Values</div>
         <div style="overflow-x:auto">
         <table class="med-tbl">
-          <thead><tr><th>Parameter</th><th>Value</th><th>Normal Range</th><th>Status</th><th>Meaning</th></tr></thead>
+          <thead><tr><th>Test</th><th>Your Value</th><th>Normal Range</th><th>Status</th><th>What it means</th></tr></thead>
           <tbody>
-            ${data.keyFindings.map(f => {
-              const color = f.status==='High'?'#ef4444':f.status==='Low'?'#f97316':f.status==='Abnormal'?'#dc2626':'#22c55e';
+            ${rvData.map(f => {
+              const status = f.status || f.parameter || 'Normal';
+              const color = status==='High'||status==='Critical'?'#ef4444':status==='Low'?'#f97316':status==='Abnormal'?'#dc2626':'#22c55e';
               return `<tr>
-                <td style="font-weight:600;color:var(--b700)">${f.parameter||'—'}</td>
+                <td style="font-weight:600;color:var(--b700)">${f.test||f.parameter||'—'}</td>
                 <td style="font-weight:700">${f.value||'—'}</td>
                 <td style="color:var(--text-muted);font-size:0.72rem">${f.normalRange||'—'}</td>
-                <td><span style="background:${color}22;color:${color};border:1px solid ${color}44;border-radius:999px;padding:2px 8px;font-size:0.7rem;font-weight:600">${f.status||'—'}</span></td>
-                <td style="font-size:0.75rem;color:var(--text-sub)">${f.meaning||'—'}</td>
+                <td><span style="background:${color}22;color:${color};border:1px solid ${color}44;border-radius:999px;padding:2px 8px;font-size:0.7rem;font-weight:600">${status}</span></td>
+                <td style="font-size:0.75rem;color:var(--text-sub)">${f.plainExplanation||f.meaning||'—'}</td>
               </tr>`;
             }).join('')}
           </tbody>
@@ -1872,9 +1710,10 @@ textarea:focus{border-color:var(--b400);}
         <ul class="se-ul">${(data.sideEffects||[]).map(s=>`<li class="se-li"><div class="se-d"></div><span>${s}</span></li>`).join('')}</ul>
         ${data.doctorAlert?`<div class="dal">🚨 <span>${data.doctorAlert}</span></div>`:''}
       </div>
+      ${(data.comparisons&&data.comparisons.length) ? `
       <div class="res-block"><div class="rb-title"><div class="rb-icon ti-blue">🔄</div>${t.jargon}</div>
-        <div class="cmp-g">${(data.comparisons||[]).map(p=>`<div class="cmp cmpj"><div class="cmpl">${t.originalLbl}</div>${p.original}</div><div class="cmp cmpp"><div class="cmpl">${t.plainLbl}</div>${p.plain}</div>`).join('')}</div>
-      </div>`;
+        <div class="cmp-g">${data.comparisons.map(p=>`<div class="cmp cmpj"><div class="cmpl">${t.originalLbl}</div>${p.original||'—'}</div><div class="cmp cmpp"><div class="cmpl">${t.plainLbl}</div>${p.plain||'—'}</div>`).join('')}</div>
+      </div>` : ''}`;
 
     // Checklist tile preview
     const ck=document.getElementById('ckContent');
@@ -1883,6 +1722,10 @@ textarea:focus{border-color:var(--b400);}
     }
     buildSched(data.medications||[]);
     loadHistory();
+    // Show read aloud bar
+    const raBar = document.getElementById('readAloudBar');
+    if(raBar) raBar.classList.add('show');
+    if(typeof stopReading === 'function') stopReading();
   }
 
   function getTimeSlot(timing) {
@@ -1977,21 +1820,36 @@ textarea:focus{border-color:var(--b400);}
   }
 
   async function loadHistory(){
-    try{
-      const res=await fetch('/api/history');
-      const data=await res.json();
-      window._hist=data;
-      const grid=document.getElementById('histGrid');
-      if(!data.length){ grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ic">🕐</div>No history yet</div>'; return; }
-      grid.innerHTML=data.slice(0,6).map(item=>`<div class="h-card" onclick="reloadRes('${item.id}')"><div class="h-name">📄 ${item.filename||'Text Input'}</div><div class="h-date">${new Date(item.createdAt).toLocaleString()}</div></div>`).join('');
-    }catch(e){}
+    try {
+      const res = await fetch('/api/history');
+      if (!res.ok) return;
+      const data = await res.json();
+      window._hist = data;
+      const grid = document.getElementById('histGrid');
+      if (!grid) return;
+      if (!data || !data.length) {
+        grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-ic">🕐</div>No history yet</div>';
+        return;
+      }
+      grid.innerHTML = data.slice(0,8).map(item => `
+        <div class="h-card" onclick="reloadRes('${item.id}')">
+          <div class="h-name">📄 ${item.filename || 'Text Input'}</div>
+          <div class="h-date">${new Date(item.createdAt).toLocaleString()}</div>
+        </div>`).join('');
+    } catch(e) {
+      console.log('History not available (no server)');
+    }
   }
 
-  function reloadRes(id){
-    if(!window._hist) return;
-    const item=window._hist.find(i=>i.id===id);
-    if(!item) return;
-    try{ renderAll(JSON.parse(item.result)); closeExpand(); }catch(e){}
+  function reloadRes(id) {
+    if (!window._hist) return;
+    const item = window._hist.find(i => i.id === id);
+    if (!item) return;
+    try {
+      const result = typeof item.result === 'string' ? JSON.parse(item.result) : item.result;
+      renderAll(result);
+      closeExpand();
+    } catch(e) { console.error('Could not reload result', e); }
   }
 
   function openExpand(page){
@@ -2213,155 +2071,6 @@ textarea:focus{border-color:var(--b400);}
   }
 
 
-  // ── MIC / VOICE RECORDING ──
-  let mediaRecorder = null, audioChunks = [], recInterval = null, recSeconds = 0;
-  let audioFile = null, isReading = false, ttsUtterance = null;
-
-  function toggleRec() {
-    if (mediaRecorder && mediaRecorder.state === 'recording') {
-      stopRec();
-    } else {
-      startRec();
-    }
-  }
-
-  let speechRecognition = null;
-  let voiceTranscriptText = '';
-
-  async function startRec() {
-    try {
-      // Start MediaRecorder for audio file
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunks = []; recSeconds = 0;
-      mediaRecorder = new MediaRecorder(stream);
-      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(audioChunks, { type: 'audio/webm' });
-        audioFile = new File([blob], 'recording.webm', { type: 'audio/webm' });
-        showAudioPrev('🎙️ Recording (' + formatTime(recSeconds) + ')');
-        stream.getTracks().forEach(t => t.stop());
-        // Show transcript if we got any
-        if (voiceTranscriptText.trim()) {
-          document.getElementById('voiceTranscriptWrap').style.display = 'block';
-          document.getElementById('voiceTranscript').value = voiceTranscriptText.trim();
-        }
-      };
-      mediaRecorder.start();
-
-      // Also start Speech Recognition for live transcript
-      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRec) {
-        voiceTranscriptText = '';
-        speechRecognition = new SpeechRec();
-        speechRecognition.continuous = true;
-        speechRecognition.interimResults = true;
-        speechRecognition.lang = lang === 'hi' ? 'hi-IN' : lang === 'gu' ? 'gu-IN' : 'en-IN';
-        speechRecognition.onresult = (e) => {
-          let interim = '', final = '';
-          for (let i = e.resultIndex; i < e.results.length; i++) {
-            if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
-            else interim += e.results[i][0].transcript;
-          }
-          voiceTranscriptText += final;
-          // Show live in micSub
-          const preview = (voiceTranscriptText + interim).slice(-60);
-          document.getElementById('micSub').textContent = preview || 'Listening…';
-        };
-        speechRecognition.onerror = () => {};
-        speechRecognition.start();
-      }
-
-      // UI
-      document.getElementById('micBox').classList.add('recording');
-      document.getElementById('recDot').classList.add('show');
-      document.getElementById('recTimer').classList.add('show');
-      document.getElementById('micTitle').textContent = 'Recording…';
-      document.getElementById('micSub').textContent = 'Listening…';
-      recInterval = setInterval(() => {
-        recSeconds++;
-        document.getElementById('recTimer').textContent = formatTime(recSeconds);
-      }, 1000);
-    } catch (e) {
-      showToast('Microphone access denied. Please allow mic permission.');
-    }
-  }
-
-  function stopRec() {
-    if (mediaRecorder) { mediaRecorder.stop(); mediaRecorder = null; }
-    if (speechRecognition) { speechRecognition.stop(); speechRecognition = null; }
-    clearInterval(recInterval);
-    document.getElementById('micBox').classList.remove('recording');
-    document.getElementById('recDot').classList.remove('show');
-    document.getElementById('recTimer').classList.remove('show');
-    document.getElementById('micTitle').textContent = 'Record Voice';
-    document.getElementById('micSub').textContent = 'Tap to start';
-  }
-
-  function formatTime(s) {
-    return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
-  }
-
-  function hAudioFile(inp) {
-    const f = inp.files[0]; if (!f) return;
-    audioFile = f;
-    showAudioPrev(f.name);
-  }
-
-  function showAudioPrev(name) {
-    document.getElementById('audioName').textContent = name;
-    document.getElementById('audioPrev').classList.add('show');
-  }
-
-  function rmAudio() {
-    audioFile = null;
-    document.getElementById('audioInp').value = '';
-    document.getElementById('audioPrev').classList.remove('show');
-  }
-
-  // Override analyze to handle audio
-  const _origAnalyze = analyze;
-  window._audioAnalyze = async function() {
-    if (!audioFile) return false;
-    const btn = document.getElementById('abtn');
-    const l = document.getElementById('outLang').value;
-    const age = document.getElementById('patAge').value;
-    const fd = new FormData();
-    fd.append('lang', l);
-    if (age) fd.append('age', age);
-    fd.append('file', audioFile);
-    fd.append('inputType', 'audio');
-    btn.disabled = true;
-    document.getElementById('loadOv').classList.add('show');
-    startProgress();
-    try {
-      const res = await fetch('/api/analyze', { method: 'POST', body: fd });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Server error');
-      lastResult = data;
-      finishProgress();
-      renderAll(data);
-      updateStats();
-    } catch(err) {
-      finishProgress();
-      showToast('Error: ' + err.message);
-    } finally {
-      btn.disabled = false;
-      document.getElementById('loadOv').classList.remove('show');
-    }
-    return true;
-  };
-
-  // Patch analyze to check audio first
-  const originalAnalyze = window.analyze;
-  window.analyze = async function() {
-    // If audio file present and we're on PDF tab, use audio
-    if (audioFile && tab === 'pdf') {
-      await window._audioAnalyze();
-      return;
-    }
-    await originalAnalyze();
-  };
-
   // ── TEXT TO SPEECH (Read Aloud) ──
   function toggleReadAloud() {
     if (isReading) {
@@ -2402,13 +2111,7 @@ textarea:focus{border-color:var(--b400);}
     document.getElementById('raWave').classList.remove('active');
   }
 
-  // Show read aloud bar when results arrive
-  const _origRenderAll = renderAll;
-  window.renderAll = function(data) {
-    _origRenderAll(data);
-    document.getElementById('readAloudBar').classList.add('show');
-    stopReading(); // reset if re-rendering
-  };
+  // Show read aloud bar when results arrive - patched into renderAll directly
 
 
   // ══════════════════════════════════════════════
