@@ -125,9 +125,11 @@ body::after{
 
 /* ── BENTO GRID ── */
 .bento {
-  position:fixed;inset:0;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
   padding:var(--gap);
-  padding-bottom:82px;
+  padding-top:80px;
+  padding-bottom:16px;
   display:grid;
   grid-template-columns:2fr 1fr 1fr;
   grid-template-rows:1fr 1fr 1fr;
@@ -307,9 +309,9 @@ textarea:focus{border-color:var(--b400);}
 .ep-body::-webkit-scrollbar-thumb{background:var(--b200);border-radius:99px;}
 
 /* BOTTOM DOCK */
-.dock{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:var(--dock-bg);backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,0.12);border-radius:999px;padding:7px 10px;display:flex;align-items:center;gap:3px;z-index:500;box-shadow:0 8px 32px rgba(11,63,110,0.3);transition:background 0.3s;}
-.dock-logo{display:flex;align-items:center;gap:7px;padding:3px 10px;border-right:1px solid rgba(255,255,255,0.12);margin-right:3px;}
-.dock-logo h1{font-family:var(--fd);font-size:0.85rem;color:white;font-weight:700;}
+.dock{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--dock-bg);backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,0.12);border-radius:999px;padding:8px 14px;display:flex;align-items:center;gap:4px;z-index:600;box-shadow:0 8px 32px rgba(11,63,110,0.3);transition:background 0.3s;}
+.dock-logo{display:flex;align-items:center;gap:9px;padding:4px 14px;border-right:1px solid rgba(255,255,255,0.12);margin-right:4px;}
+.dock-logo h1{font-family:var(--fd);font-size:1.05rem;color:white;font-weight:700;letter-spacing:0.01em;}
 .dock-li{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.07);cursor:pointer;transition:all 0.18s;border:none;color:rgba(255,255,255,0.5);position:relative;}
 .dock-li:hover{background:rgba(255,255,255,0.14);color:white;transform:translateY(-2px);}
 .dock-li.active{background:var(--b500);color:white;box-shadow:0 2px 10px rgba(12,139,232,0.4);}
@@ -381,7 +383,7 @@ textarea:focus{border-color:var(--b400);}
 .empty-ic{font-size:1.8rem;opacity:0.35;margin-bottom:4px;}
 
 /* TOAST */
-.toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--b800);color:white;padding:9px 18px;border-radius:999px;font-size:0.8rem;box-shadow:var(--sh);z-index:9000;opacity:0;transition:all 0.3s;white-space:nowrap;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--b800);color:white;padding:9px 18px;border-radius:999px;font-size:0.8rem;box-shadow:var(--sh);z-index:9000;opacity:0;transition:all 0.3s;white-space:nowrap;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
 /* MOBILE */
@@ -1012,6 +1014,76 @@ textarea:focus{border-color:var(--b400);}
     .nurse-send:hover { transform:scale(1.1); }
     .nurse-send:disabled { opacity:0.5;cursor:not-allowed;transform:none; }
 
+    
+    /* ── SCHEDULE TABLE ── */
+    .sched-table-wrap { overflow-x:auto; margin-top:10px; }
+    .sched-table {
+      width:100%;border-collapse:collapse;
+      font-size:0.76rem;
+    }
+    .sched-table thead tr {
+      background:linear-gradient(135deg,var(--b700),var(--b800));
+    }
+    .sched-table th {
+      padding:8px 10px;text-align:left;
+      color:white;font-weight:600;
+      font-size:0.68rem;letter-spacing:0.06em;
+      text-transform:uppercase;white-space:nowrap;
+    }
+    .sched-table th:first-child { border-radius:8px 0 0 0; }
+    .sched-table th:last-child  { border-radius:0 8px 0 0; }
+    .sched-table td {
+      padding:8px 10px;
+      border-bottom:1px solid var(--b100);
+      color:var(--text);vertical-align:middle;
+    }
+    .sched-table tr:last-child td { border-bottom:none; }
+    .sched-table tr:nth-child(even) td { background:rgba(239,248,255,0.5); }
+    [data-theme="dark"] .sched-table tr:nth-child(even) td { background:rgba(1,87,161,0.12); }
+    .sched-table tr:hover td { background:var(--b50); }
+    [data-theme="dark"] .sched-table tr:hover td { background:rgba(1,87,161,0.2); }
+
+    .smed-name {
+      font-weight:600;color:var(--b600);
+      display:flex;align-items:center;gap:6px;
+    }
+    .smed-dot {
+      width:8px;height:8px;border-radius:50%;
+      background:linear-gradient(135deg,var(--b400),var(--teal));
+      flex-shrink:0;
+    }
+    .stime-badge {
+      display:inline-flex;align-items:center;gap:4px;
+      background:var(--b50);border:1px solid var(--b200);
+      border-radius:999px;padding:2px 8px;
+      font-size:0.7rem;font-weight:500;color:var(--b700);
+      white-space:nowrap;
+    }
+    .sdays-badge {
+      display:inline-block;
+      background:rgba(0,194,178,0.1);border:1px solid rgba(0,194,178,0.3);
+      border-radius:6px;padding:2px 7px;
+      font-size:0.7rem;font-weight:600;color:var(--teal);
+    }
+    .stime-icon { font-size:0.75rem; }
+
+    /* Time of day color coding */
+    .t-morning  { background:rgba(251,191,36,0.12);border-color:rgba(251,191,36,0.35);color:#b45309; }
+    .t-afternoon{ background:rgba(249,115,22,0.10);border-color:rgba(249,115,22,0.3);color:#c2410c; }
+    .t-evening  { background:rgba(168,85,247,0.10);border-color:rgba(168,85,247,0.3);color:#7c3aed; }
+    .t-night    { background:rgba(30,58,138,0.12);border-color:rgba(30,58,138,0.3);color:#1e3a8a; }
+
+    .sched-divider {
+      display:flex;align-items:center;gap:10px;
+      margin:12px 0 8px;
+    }
+    .sched-divider-line { flex:1;height:1px;background:var(--b100); }
+    .sched-divider-label {
+      font-size:0.68rem;font-weight:600;letter-spacing:0.08em;
+      text-transform:uppercase;color:var(--b500);
+      white-space:nowrap;
+    }
+
     </style>
 </head>
 <body>
@@ -1294,6 +1366,12 @@ textarea:focus{border-color:var(--b400);}
           🎙️ <span id="audioName"></span>
           <button class="rm-audio" onclick="rmAudio()">✕</button>
         </div>
+        <!-- Voice transcript box -->
+        <div id="voiceTranscriptWrap" style="display:none;margin-top:6px;">
+          <div style="font-size:0.7rem;font-weight:600;color:var(--teal);margin-bottom:4px;">🎤 Voice Transcript (editable)</div>
+          <textarea id="voiceTranscript" style="min-height:70px;font-size:0.8rem;" placeholder="Your speech will appear here… you can edit before analyzing"></textarea>
+          <button onclick="analyzeTranscript()" style="width:100%;margin-top:6px;padding:8px;background:linear-gradient(135deg,var(--teal),#008f82);color:white;border:none;border-radius:8px;font-family:var(--fd);font-size:0.85rem;font-weight:600;cursor:pointer;">🔍 Analyze Voice Text</button>
+        </div>
         <div class="fprev" id="pPrev"><span>📄 </span><span id="pName"></span><button class="rmf" onclick="rmF('pdf')">✕</button></div>
       </div>
       <div class="upanel" id="up-image">
@@ -1396,7 +1474,7 @@ textarea:focus{border-color:var(--b400);}
 <!-- BOTTOM DOCK -->
 <div class="dock" id="dock" style="display:none;">
   <div class="dock-logo">
-    <svg width="16" height="16" viewBox="0 0 26 26" fill="none"><line x1="13" y1="3" x2="13" y2="23" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 5 C10 3 5 4 5 7 C5 9 9 9 13 8" stroke="white" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M13 5 C16 3 21 4 21 7 C21 9 17 9 13 8" stroke="white" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M13 8 C10 10 10 13 13 14 C10 15 10 18 13 19" stroke="#7ee8e2" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M13 8 C16 10 16 13 13 14 C16 15 16 18 13 19" stroke="#7ee8e2" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="13" cy="21" r="2" stroke="white" stroke-width="1.5" fill="none"/></svg>
+    <svg width="22" height="22" viewBox="0 0 26 26" fill="none"><line x1="13" y1="3" x2="13" y2="23" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M13 5 C10 3 5 4 5 7 C5 9 9 9 13 8" stroke="white" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M13 5 C16 3 21 4 21 7 C21 9 17 9 13 8" stroke="white" stroke-width="1.6" stroke-linecap="round" fill="none"/><path d="M13 8 C10 10 10 13 13 14 C10 15 10 18 13 19" stroke="#7ee8e2" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M13 8 C16 10 16 13 13 14 C16 15 16 18 13 19" stroke="#7ee8e2" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="13" cy="21" r="2" stroke="white" stroke-width="1.5" fill="none"/></svg>
     <h1>MedDecode</h1>
   </div>
   <button class="dock-li" onclick="goHome()" title="Home">
@@ -1741,6 +1819,7 @@ textarea:focus{border-color:var(--b400);}
       finishProgress();
       renderAll(data);
       updateStats();
+      loadHistory();
     } catch(err){
       finishProgress();
       showToast('Error: '+err.message);
@@ -1756,9 +1835,35 @@ textarea:focus{border-color:var(--b400);}
     const sc=document.getElementById('sumContent');
     sc.style.display='block';
     const t = T[lang];
+
+    // Build keyFindings table if present
+    const kfHtml = (data.keyFindings && data.keyFindings.length) ? `
+      <div class="res-block">
+        <div class="rb-title"><div class="rb-icon ti-teal">🔬</div>Key Findings</div>
+        <div style="overflow-x:auto">
+        <table class="med-tbl">
+          <thead><tr><th>Parameter</th><th>Value</th><th>Normal Range</th><th>Status</th><th>Meaning</th></tr></thead>
+          <tbody>
+            ${data.keyFindings.map(f => {
+              const color = f.status==='High'?'#ef4444':f.status==='Low'?'#f97316':f.status==='Abnormal'?'#dc2626':'#22c55e';
+              return `<tr>
+                <td style="font-weight:600;color:var(--b700)">${f.parameter||'—'}</td>
+                <td style="font-weight:700">${f.value||'—'}</td>
+                <td style="color:var(--text-muted);font-size:0.72rem">${f.normalRange||'—'}</td>
+                <td><span style="background:${color}22;color:${color};border:1px solid ${color}44;border-radius:999px;padding:2px 8px;font-size:0.7rem;font-weight:600">${f.status||'—'}</span></td>
+                <td style="font-size:0.75rem;color:var(--text-sub)">${f.meaning||'—'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>` : '';
+
     sc.innerHTML=`
+      ${data.reportType ? `<div style="display:inline-flex;align-items:center;gap:6px;background:var(--b100);border:1px solid var(--b200);border-radius:999px;padding:4px 12px;font-size:0.72rem;font-weight:600;color:var(--b700);margin-bottom:10px">📋 ${data.reportType}</div>` : ''}
       <div class="fam-banner"><h4>${t.famShare}</h4><p>${data.familySummary||'—'}</p></div>
       <div class="res-block"><div class="rb-title"><div class="rb-icon ti-blue">🩺</div>${t.diagnosis}</div><div class="diag-p">${data.diagnosis||'—'}</div></div>
+      ${kfHtml}
       <div class="res-block"><div class="rb-title"><div class="rb-icon ti-teal">💊</div>${t.medications}</div>
         <table class="med-tbl"><thead><tr><th>${t.medName}</th><th>${t.medDose}</th><th>${t.medTime}</th><th>${t.medDur}</th></tr></thead><tbody>
           ${(data.medications||[]).map(m=>`<tr><td class="mname">${m.name}</td><td>${m.dosage}</td><td>${m.timing}</td><td>${m.duration}</td></tr>`).join('')}
@@ -1780,19 +1885,89 @@ textarea:focus{border-color:var(--b400);}
     loadHistory();
   }
 
-  function buildSched(meds){
-    const slots={'Morning':[],'Afternoon':[],'Evening':[],'Night':[]};
-    meds.forEach(m=>{
-      const t=(m.timing||'').toLowerCase();
-      if(t.includes('morning')||t.includes('breakfast')) slots['Morning'].push(m.name);
-      else if(t.includes('afternoon')||t.includes('lunch')) slots['Afternoon'].push(m.name);
-      else if(t.includes('evening')) slots['Evening'].push(m.name);
-      else if(t.includes('night')||t.includes('bedtime')||t.includes('dinner')) slots['Night'].push(m.name);
-      else slots['Morning'].push(m.name);
+  function getTimeSlot(timing) {
+    const t = (timing||'').toLowerCase();
+    if(t.includes('morning')||t.includes('breakfast')||t.includes('am')) return 'Morning';
+    if(t.includes('afternoon')||t.includes('lunch')||t.includes('noon')) return 'Afternoon';
+    if(t.includes('evening')||t.includes('sunset')) return 'Evening';
+    if(t.includes('night')||t.includes('bedtime')||t.includes('dinner')||t.includes('pm')||t.includes('sleep')) return 'Night';
+    return 'As Directed';
+  }
+
+  function getTimeClass(slot) {
+    return { 'Morning':'t-morning','Afternoon':'t-afternoon','Evening':'t-evening','Night':'t-night' }[slot] || '';
+  }
+
+  function getTimeEmoji(slot) {
+    return { 'Morning':'🌅','Afternoon':'☀️','Evening':'🌆','Night':'🌙','As Directed':'⏰' }[slot] || '💊';
+  }
+
+  function buildSched(meds) {
+    const el = document.getElementById('schContent');
+    if (!meds || !meds.length) {
+      el.innerHTML = '<div class="empty"><div class="empty-ic">📅</div>No schedule yet</div>';
+      return;
+    }
+
+    // Group by time slot
+    const slots = { 'Morning':[], 'Afternoon':[], 'Evening':[], 'Night':[], 'As Directed':[] };
+    meds.forEach(m => slots[getTimeSlot(m.timing)].push(m));
+
+    // Build compact pill view + full table
+    let out = '';
+
+    // ── FULL SCHEDULE TABLE ──
+    out += `
+      <div class="sched-divider">
+        <div class="sched-divider-line"></div>
+        <div class="sched-divider-label">📋 Full Schedule</div>
+        <div class="sched-divider-line"></div>
+      </div>
+      <div class="sched-table-wrap">
+        <table class="sched-table">
+          <thead>
+            <tr>
+              <th>💊 Medicine</th>
+              <th>📏 Dosage</th>
+              <th>⏰ Time</th>
+              <th>🗓️ Duration</th>
+              <th>📝 Instructions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${meds.map(m => {
+              const slot = getTimeSlot(m.timing);
+              const tc = getTimeClass(slot);
+              const emoji = getTimeEmoji(slot);
+              return `<tr>
+                <td><div class="smed-name"><div class="smed-dot"></div>${m.name}</div></td>
+                <td><strong>${m.dosage || '—'}</strong></td>
+                <td><span class="stime-badge ${tc}"><span class="stime-icon">${emoji}</span>${m.timing || '—'}</span></td>
+                <td><span class="sdays-badge">${m.duration || '—'}</span></td>
+                <td style="color:var(--text-sub);font-size:0.72rem">${m.instructions || '—'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sched-divider" style="margin-top:14px">
+        <div class="sched-divider-line"></div>
+        <div class="sched-divider-label">🕐 By Time of Day</div>
+        <div class="sched-divider-line"></div>
+      </div>`;
+
+    // ── TIME OF DAY PILLS ──
+    Object.entries(slots).forEach(([time, ms]) => {
+      if (!ms.length) return;
+      const emoji = getTimeEmoji(time);
+      out += `<div class="tslot">
+        <div class="tlbl">${emoji} ${time}</div>
+        <div class="tpills">${ms.map(m => `<span class="mpill">💊 ${m.name} <span style="opacity:0.6;font-size:0.65rem">${m.dosage||''}</span></span>`).join('')}</div>
+      </div>`;
     });
-    let html='';
-    Object.entries(slots).forEach(([t,ns])=>{ if(!ns.length) return; html+=`<div class="tslot"><div class="tlbl">${t}</div><div class="tpills">${ns.map(n=>`<span class="mpill">💊 ${n}</span>`).join('')}</div></div>`; });
-    document.getElementById('schContent').innerHTML=html||'<div class="empty"><div class="empty-ic">📅</div>No schedule yet</div>';
+
+    el.innerHTML = out;
   }
 
   function updateStats(){
@@ -1827,20 +2002,16 @@ textarea:focus{border-color:var(--b400);}
       body.innerHTML=lastResult?`<ul class="ck-ul">${(lastResult.checklist||[]).map(i=>`<li class="ck-li"><div class="ckb" onclick="this.classList.toggle('on')"></div><span>${i}</span></li>`).join('')}</ul>`:'<div class="empty"><div class="empty-ic">✅</div>Analyse a prescription first.</div>';
     } else if(page==='schedule'){
       title.textContent='📅 Medicine Schedule';
-      if(!lastResult){ body.innerHTML='<div class="empty"><div class="empty-ic">📅</div>Analyse a prescription first.</div>'; }
-      else {
-        const slots={'Morning':[],'Afternoon':[],'Evening':[],'Night':[]};
-        (lastResult.medications||[]).forEach(m=>{
-          const t=(m.timing||'').toLowerCase();
-          if(t.includes('morning')||t.includes('breakfast')) slots['Morning'].push(m);
-          else if(t.includes('afternoon')||t.includes('lunch')) slots['Afternoon'].push(m);
-          else if(t.includes('evening')) slots['Evening'].push(m);
-          else if(t.includes('night')||t.includes('bedtime')||t.includes('dinner')) slots['Night'].push(m);
-          else slots['Morning'].push(m);
-        });
-        let html='';
-        Object.entries(slots).forEach(([t,ms])=>{ if(!ms.length) return; html+=`<div class="tslot"><div class="tlbl">${t}</div><div class="tpills">${ms.map(m=>`<span class="mpill">💊 ${m.name} — ${m.dosage}</span>`).join('')}</div></div>`; });
-        body.innerHTML=html||'<div class="empty"><div class="empty-ic">📅</div>No schedule data.</div>';
+      if(!lastResult||!lastResult.medications?.length){
+        body.innerHTML='<div class="empty"><div class="empty-ic">📅</div>Analyse a prescription first.</div>';
+      } else {
+        // Use a temp div to build and extract
+        const tmpDiv = document.createElement('div');
+        tmpDiv.id = 'schContent';
+        document.body.appendChild(tmpDiv);
+        buildSched(lastResult.medications);
+        body.innerHTML = tmpDiv.innerHTML;
+        document.body.removeChild(tmpDiv);
       }
     } else if(page==='history'){
       title.textContent='🕐 History';
@@ -2054,8 +2225,12 @@ textarea:focus{border-color:var(--b400);}
     }
   }
 
+  let speechRecognition = null;
+  let voiceTranscriptText = '';
+
   async function startRec() {
     try {
+      // Start MediaRecorder for audio file
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunks = []; recSeconds = 0;
       mediaRecorder = new MediaRecorder(stream);
@@ -2065,14 +2240,43 @@ textarea:focus{border-color:var(--b400);}
         audioFile = new File([blob], 'recording.webm', { type: 'audio/webm' });
         showAudioPrev('🎙️ Recording (' + formatTime(recSeconds) + ')');
         stream.getTracks().forEach(t => t.stop());
+        // Show transcript if we got any
+        if (voiceTranscriptText.trim()) {
+          document.getElementById('voiceTranscriptWrap').style.display = 'block';
+          document.getElementById('voiceTranscript').value = voiceTranscriptText.trim();
+        }
       };
       mediaRecorder.start();
+
+      // Also start Speech Recognition for live transcript
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) {
+        voiceTranscriptText = '';
+        speechRecognition = new SpeechRec();
+        speechRecognition.continuous = true;
+        speechRecognition.interimResults = true;
+        speechRecognition.lang = lang === 'hi' ? 'hi-IN' : lang === 'gu' ? 'gu-IN' : 'en-IN';
+        speechRecognition.onresult = (e) => {
+          let interim = '', final = '';
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            if (e.results[i].isFinal) final += e.results[i][0].transcript + ' ';
+            else interim += e.results[i][0].transcript;
+          }
+          voiceTranscriptText += final;
+          // Show live in micSub
+          const preview = (voiceTranscriptText + interim).slice(-60);
+          document.getElementById('micSub').textContent = preview || 'Listening…';
+        };
+        speechRecognition.onerror = () => {};
+        speechRecognition.start();
+      }
+
       // UI
       document.getElementById('micBox').classList.add('recording');
       document.getElementById('recDot').classList.add('show');
       document.getElementById('recTimer').classList.add('show');
       document.getElementById('micTitle').textContent = 'Recording…';
-      document.getElementById('micSub').textContent = 'Tap to stop';
+      document.getElementById('micSub').textContent = 'Listening…';
       recInterval = setInterval(() => {
         recSeconds++;
         document.getElementById('recTimer').textContent = formatTime(recSeconds);
@@ -2084,6 +2288,7 @@ textarea:focus{border-color:var(--b400);}
 
   function stopRec() {
     if (mediaRecorder) { mediaRecorder.stop(); mediaRecorder = null; }
+    if (speechRecognition) { speechRecognition.stop(); speechRecognition = null; }
     clearInterval(recInterval);
     document.getElementById('micBox').classList.remove('recording');
     document.getElementById('recDot').classList.remove('show');
